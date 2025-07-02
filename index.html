@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração da viewport para garantir a responsividade em diferentes dispositivos -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agro do Bem - Decisões Rurais Inteligentes</title>
+    <!-- Link para o CSS global, aplicando estilos base a todas as páginas -->
+    <link rel="stylesheet" href="style.css"> 
+    <!-- Importação da fonte Poppins do Google Fonts para uma tipografia moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para a página inicial, complementando o `style.css` */
+        .hero-section {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: #181818; /* Fundo ligeiramente diferente para a seção hero, criando contraste */
+            border-bottom: 1px solid #333; /* Linha sutil para separar a seção */
+        }
+        .hero-section h1 {
+            font-size: 2.8rem; /* Tamanho de fonte responsivo */
+            margin-bottom: 20px;
+            color: #4CAF50; /* Cor de destaque da marca */
+            line-height: 1.2; /* Espaçamento entre linhas para melhor legibilidade */
+        }
+        .hero-section .subtitle {
+            font-size: 1.3rem;
+            color: #c0c0c0;
+            max-width: 700px; /* Limita a largura do texto para melhor leitura */
+            margin: 0 auto 30px auto; /* Centraliza o subtítulo */
+        }
+        .hero-section .cta-button {
+            font-size: 1.1rem;
+            padding: 15px 35px;
+        }
+
+        .form-section { /* Estilo para o formulário movido, agora mais proeminente */
+            margin-top: 40px; 
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: #1f1f1f; /* Fundo escuro para o formulário */
+            border-radius: 8px; /* Cantos arredondados */
+            border: 1px solid #333; /* Borda sutil */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra para profundidade */
+        }
+        .form-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #e0e0e0; /* Cor do título do formulário */
+        }
+        #formErrorMessage {
+            color: #ff6b6b; /* Cor de erro vibrante */
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            text-align: left;
+            display: none; /* Inicialmente oculto, visível apenas com erro */
+            padding: 10px;
+            background-color: #3a1f1f;
+            border-left: 4px solid #ff6b6b;
+            border-radius: 4px;
+        }
+        .form-section .input-group {
+            margin-bottom: 20px;
+        }
+        .form-section label {
+            font-weight: 500;
+            color: #ccc;
+            display: block; /* Garante que o label ocupe sua própria linha */
+            margin-bottom: 8px;
+        }
+        .form-section input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: #eee;
+            font-size: 1rem;
+            box-sizing: border-box; /* Inclui padding e borda na largura total */
+        }
+        .form-section input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50; /* Borda verde ao focar */
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5); /* Sombra de foco */
+        }
+
+        .problem-solution-section {
+            padding: 40px 0;
+            display: flex; /* Utiliza Flexbox para layout de colunas */
+            flex-wrap: wrap; /* Permite que as colunas quebrem para a próxima linha em telas menores */
+            gap: 30px; /* Espaçamento entre as colunas */
+            align-items: flex-start; /* Alinha o topo das colunas */
+        }
+        .problem-solution-section .column {
+            flex: 1; /* Permite que as colunas cresçam e encolham */
+            min-width: 300px; /* Garante que as colunas não fiquem muito estreitas antes de quebrar */
+            padding: 20px;
+            background-color: #1f1f1f; /* Cor de fundo dos cards da seção */
+            border-radius: 8px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .problem-solution-section h2 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50; /* Linha de destaque sob o título */
+            padding-bottom: 8px;
+            display: inline-block; /* Garante que a borda se ajuste ao texto */
+        }
+        .problem-solution-section p {
+            color: #c0c0c0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .problem-solution-section p em {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+
+        .value-proposition-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .value-proposition-section h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+        }
+        .value-proposition-section blockquote {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #4CAF50;
+            border-left: 4px solid #4CAF50; /* Citação estilizada */
+            padding-left: 20px;
+            margin: 30px auto;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        .value-proposition-section p {
+            color: #c0c0c0;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .call-to-action-bar {
+            background-color: #4CAF50; /* Cor de destaque para o CTA */
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            margin-top: 40px;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .call-to-action-bar h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .call-to-action-bar p {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        .call-to-action-bar .btn-secondary {
+            background-color: white;
+            color: #121212;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .call-to-action-bar .btn-secondary:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        /* Media Queries para responsividade */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+            .hero-section .subtitle {
+                font-size: 1.1rem;
+            }
+            .problem-solution-section .column {
+                min-width: 100%; /* Colunas ocupam toda a largura em telas menores */
+            }
+            .value-proposition-section blockquote {
+                font-size: 1.2rem;
+            }
+            .form-section {
+                padding: 20px;
+            }
+        }
+        @media (max-width: 480px) {
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+            .hero-section .subtitle {
+                font-size: 1rem;
+            }
+            .hero-section .cta-button {
+                font-size: 1rem;
+                padding: 12px 25px;
+            }
+            .form-section h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho principal da página, com logo e navegação -->
+    <header class="main-header">
+        <a href="index.html" class="header-logo" title="Início">
+            <img src="https://i.imgur.com/DeTfy65.jpeg" alt="Logo Agro do Bem: Uma folha verde estilizada representando crescimento e sustentabilidade no agronegócio.">
+        </a>
+        <nav class="header-navigation" aria-label="Navegação principal">
+            <a href="index.html" class="active" title="Página Inicial da Agro do Bem"><i class="fa fa-home"></i> Início</a>
+            <a href="planos-produtos.html" title="Conheça Nossos Planos e Produtos"><i class="fa fa-seedling"></i> Planos</a>
+            <a href="analise-espacial.html" title="Acesse a Ferramenta de Análise Espacial Interativa"><i class="fa fa-map"></i> Mapa Interativo</a>
+            <a href="registro.html" title="Crie sua Conta na Plataforma Agro do Bem"><i class="fa fa-user-plus"></i> Registrar</a>
+        </nav>
+    </header>
+
+    <!-- Conteúdo principal da página -->
+    <main class="page-container">
+        <!-- Seção Hero: Destaque principal da proposta de valor -->
+        <section class="hero-section">
+            <h1>Agro do Bem: Decisões Rurais Inteligentes</h1>
+            <p class="subtitle">
+                "O Waze inteligente da agricultura e regularização ambiental." <br>
+                Transformamos dados complexos em decisões estratégicas para o agronegócio com IA, Geotecnologia e Supply Chain.
+            </p>
+            <a href="planos-produtos.html" class="btn cta-button">Conheça Nossos Planos</a>
+        </section>
+
+        <!-- Formulário de Simulação: Posicionado para capturar o interesse do usuário cedo -->
+        <section class="form-section">
+            <h2><span class="icon-placeholder"></span>Inicie sua Análise Personalizada</h2>
+            <p style="text-align: center; color: #bbb; margin-top: -20px; margin-bottom: 30px;">Preencha os dados abaixo para uma simulação de análise em nossa plataforma.</p>
+            <form id="propertyForm">
+                <div id="formErrorMessage"></div>
+                <div class="input-group">
+                    <label for="ownerName">Nome do Proprietário:</label>
+                    <input type="text" id="ownerName" name="ownerName" placeholder="Ex: João da Silva" required aria-required="true">
+                </div>
+                <div class="input-group">
+                    <label for="propertyName">Nome da Propriedade:</label>
+                    <input type="text" id="propertyName" name="propertyName" placeholder="Ex: Fazenda Esperança" required aria-required="true">
+                </div>
+                <div class="input-group">
+                    <label for="carNumber">Nº do CAR (Opcional para Simulação):</label>
+                    <input type="text" id="carNumber" name="carNumber" placeholder="Ex: CAR123XYZ (ou deixe em branco)">
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Analisar Propriedade no Mapa</button>
+            </form>
+        </section>
+
+        <hr class="section-divider">
+
+        <!-- Seção Problema vs. Solução: Detalha o desafio do cliente e como a Agro do Bem resolve -->
+        <section class="problem-solution-section">
+            <div class="column">
+                <h2>O Problema no Campo</h2>
+                <p>Produtores rurais e empresas do agro frequentemente enfrentam a <strong class="highlight-text">falta de inteligência integrada</strong> para tomar decisões cruciais sobre questões ambientais, produtivas e logísticas. Isso pode levar a multas, perda de produtividade e ineficiências operacionais.</p>
+                <p><em>Você tem dificuldade em entender se a sua propriedade está 100% regularizada ambientalmente, produzindo com máxima eficiência e logística otimizada?</em> (Latência do problema: 9/10)</p>
+            </div>
+            <div class="column">
+                <h2>Nossa Solução Inovadora</h2>
+                <p>A Agro do Bem oferece uma plataforma SaaS combinada com consultoria estratégica. Analisamos profundamente sua propriedade rural, fornecendo <strong class="highlight-text">diagnósticos completos</strong> (ambiental, fundiário, climático, logístico, produtivo), relatórios técnicos detalhados, painéis inteligentes e planos de ação integrados.</p>
+                <p>Com a Agro do Bem, tome decisões embasadas em dados geoespaciais e inteligência artificial para <strong class="highlight-text">evitar riscos ambientais, fiscais e produtivos</strong>.</p>
+            </div>
+        </section>
+        
+        <hr class="section-divider">
+
+        <!-- Seção Proposta de Valor: Reforça o diferencial da Agro do Bem -->
+        <section class="value-proposition-section">
+            <h2>Nossa Proposta de Valor</h2>
+            <blockquote>
+                "Transformamos dados geoespaciais em decisões inteligentes para que produtores rurais produzam mais, com regularidade ambiental e logística otimizada."
+            </blockquote>
+            <p>Ajudamos produtores e empresas a reduzir riscos, ganhar eficiência e aumentar a rentabilidade com tecnologia de ponta.</p>
+        </section>
+        
+        <!-- Barra de Chamada para Ação: Incentiva o engajamento final -->
+        <section class="call-to-action-bar">
+            <h3>Pronto para Elevar sua Gestão Rural?</h3>
+            <p>Descubra como a Agro do Bem pode revolucionar sua propriedade. Seja um cliente pioneiro, parceiro ou investidor!</p>
+            <a href="planos-produtos.html" class="btn btn-secondary">Ver Planos e Produtos</a>
+        </section>
+
+    </main>
+
+    <!-- Rodapé padronizado -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/company/ambientare" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://wa.me/5599999999999" target="_blank" rel="noopener" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="mailto:gabriel.oliveira@ambientare.com.br" title="E-mail"><i class="fa fa-envelope"></i></a>
+            </div>
+            <p><strong style="color: #ddd;">Agro do Bem - Decisões Rurais Inteligentes</strong></p>
+            <div class="footer-contact-info">
+                <p><strong>Contato:</strong> <a href="mailto:gabriel.oliveira@ambientare.com.br">gabriel.oliveira@ambientare.com.br</a></p>
+                <p><strong>MVP:</strong> <a href="http://www.agrodobem.com/mvp" target="_blank" rel="noopener noreferrer">www.agrodobem.com/mvp</a></p>
+            </div>
+            <p style="margin-top: 20px;">&copy; <span id="currentYear"></span> Agro do Bem. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Atualiza dinamicamente o ano no rodapé
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Adiciona um event listener para o envio do formulário
+        document.getElementById('propertyForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário, que recarregaria a página
+
+            const ownerNameInput = document.getElementById('ownerName');
+            const propertyNameInput = document.getElementById('propertyName');
+            const carNumberInput = document.getElementById('carNumber');
+            const errorMessageDiv = document.getElementById('formErrorMessage');
+
+            const ownerName = ownerNameInput.value.trim(); // Remove espaços em branco antes e depois
+            const propertyName = propertyNameInput.value.trim();
+            const carNumber = carNumberInput.value.trim();
+
+            // Reseta a mensagem de erro antes de cada validação
+            errorMessageDiv.style.display = 'none';
+            errorMessageDiv.textContent = '';
+
+            // Validação básica dos campos obrigatórios
+            if (!ownerName || !propertyName) {
+                errorMessageDiv.textContent = 'Nome do Proprietário e Nome da Propriedade são obrigatórios.';
+                errorMessageDiv.style.display = 'block'; // Mostra a mensagem de erro
+                // Foca no primeiro campo vazio para melhorar a usabilidade
+                if (!ownerName) ownerNameInput.focus();
+                else if (!propertyName) propertyNameInput.focus();
+                return; // Interrompe a execução da função
+            }
+
+            // Armazena os dados no localStorage para que possam ser acessados na próxima página
+            try {
+                localStorage.setItem('agroDoBem_ownerName', ownerName);
+                localStorage.setItem('agroDoBem_propertyName', propertyName);
+                localStorage.setItem('agroDoBem_carNumber', carNumber); // CAR é opcional, pode ser uma string vazia
+
+                // Redireciona o usuário para a página de análise espacial
+                window.location.href = 'analise-espacial.html';
+            } catch (e) {
+                // Captura erros de localStorage (ex: quota excedida, segurança)
+                console.error('Erro ao salvar dados no localStorage:', e);
+                errorMessageDiv.textContent = 'Não foi possível salvar os dados localmente. Por favor, tente novamente ou verifique as configurações do seu navegador.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

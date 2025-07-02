@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agro do Bem - Crie sua Conta</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para a página de registro */
+        .form-container {
+            max-width: 500px; /* Largura máxima para o formulário */
+            margin: 40px auto; /* Centraliza e adiciona margem */
+            padding: 35px;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            border: 1px solid #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+        }
+        .form-container h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        .form-footer-links {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+        }
+        .form-footer-links a {
+            margin: 0 10px;
+        }
+        #errorMessage {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: left;
+            display: none;
+        }
+        .password-hint {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="index.html" class="header-logo" title="Início">
+            <img src="https://i.imgur.com/DeTfy65.jpeg" alt="Logo Agro do Bem">
+        </a>
+        <nav class="header-navigation" aria-label="Navegação principal">
+            <a href="index.html" title="Página Inicial"><i class="fa fa-home"></i> Início</a>
+            <a href="planos-produtos.html" title="Nossos Planos e Produtos"><i class="fa fa-seedling"></i> Planos</a>
+            <a href="analise-espacial.html" title="Análise Espacial Interativa"><i class="fa fa-map"></i> Mapa Interativo</a>
+            <a href="registro.html" class="active" title="Crie sua Conta"><i class="fa fa-user-plus"></i> Registrar</a>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <div class="form-container">
+            <h1><span class="icon-placeholder"></span>Crie sua Conta na Agro do Bem</h1>
+            <form id="registerForm">
+                <div>
+                    <label for="username">Nome de Usuário:</label>
+                    <input type="text" id="username" name="username" placeholder="Escolha um nome de usuário" required autocomplete="username">
+                </div>
+                <div>
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required autocomplete="email">
+                </div>
+                <div>
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres, letras e números" required autocomplete="new-password">
+                    <p class="password-hint">Sua senha deve ter pelo menos 8 caracteres, incluindo letras e números.</p>
+                </div>
+                <div>
+                    <label for="confirmPassword">Confirmar Senha:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repita a senha" required autocomplete="new-password">
+                </div>
+                <div id="errorMessage"></div>
+                <button type="submit" class="btn" style="width: 100%;">Registrar Agora</button>
+            </form>
+            <div class="form-footer-links">
+                <a href="#">Já tem uma conta? Faça Login</a> <!-- Link para login (hipotético) -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/company/ambientare" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://wa.me/5599999999999" target="_blank" rel="noopener" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="mailto:gabriel.oliveira@ambientare.com.br" title="E-mail"><i class="fa fa-envelope"></i></a>
+            </div>
+            <p><strong style="color: #ddd;">Agro do Bem - Decisões Rurais Inteligentes</strong></p>
+            <div class="footer-contact-info">
+                <p><strong>Contato:</strong> <a href="mailto:gabriel.oliveira@ambientare.com.br">gabriel.oliveira@ambientare.com.br</a></p>
+                <p><strong>MVP:</strong> <a href="http://www.agrodobem.com/mvp" target="_blank" rel="noopener noreferrer">www.agrodobem.com/mvp</a></p>
+            </div>
+            <p style="margin-top: 20px;">&copy; <span id="currentYear"></span> Agro do Bem. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const errorMessageDiv = document.getElementById('errorMessage');
+            
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            errorMessageDiv.style.display = 'none';
+            errorMessageDiv.textContent = '';
+
+            if (!username || !email || !password || !confirmPassword) {
+                errorMessageDiv.textContent = 'Todos os campos são obrigatórios.';
+                errorMessageDiv.style.display = 'block';
+                return;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorMessageDiv.textContent = 'Por favor, insira um endereço de e-mail válido.';
+                errorMessageDiv.style.display = 'block';
+                emailInput.focus();
+                return;
+            }
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            if (!passwordRegex.test(password)) {
+                errorMessageDiv.textContent = 'A senha deve ter pelo menos 8 caracteres, incluindo letras e números.';
+                errorMessageDiv.style.display = 'block';
+                passwordInput.focus();
+                return;
+            }
+            if (password !== confirmPassword) {
+                errorMessageDiv.textContent = 'As senhas não coincidem. Por favor, verifique.';
+                errorMessageDiv.style.display = 'block';
+                confirmPasswordInput.focus();
+                return;
+            }
+            
+            console.warn("AVISO DE SEGURANÇA: Este é um protótipo. A funcionalidade de registro é simulada e NÃO é segura para produção.");
+            
+            try {
+                const existingUser = localStorage.getItem('user_' + username.toLowerCase());
+                if (existingUser) {
+                    errorMessageDiv.textContent = 'Nome de usuário já cadastrado. Por favor, escolha outro.';
+                    errorMessageDiv.style.display = 'block';
+                    usernameInput.focus();
+                    return;
+                }
+                localStorage.setItem('user_' + username.toLowerCase(), JSON.stringify({ email: email, username: username }));
+                alert('Cadastro (simulado) realizado com sucesso para o usuário: ' + username + '\n\nEm um sistema real, os dados seriam enviados para um servidor seguro.');
+                document.getElementById('registerForm').reset();
+            } catch (e) {
+                console.error("Erro ao simular cadastro:", e);
+                errorMessageDiv.textContent = 'Ocorreu um erro inesperado. Por favor, tente novamente.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

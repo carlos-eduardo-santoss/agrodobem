@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agro do Bem - Nossos Planos</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para a página de planos */
+        .introducao-planos {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+        .introducao-planos h1 {
+            font-size: 2.5rem; /* Ajuste do tamanho da fonte do título principal */
+            margin-bottom: 15px;
+        }
+        .introducao-planos p.subheadline {
+            font-size: 1.15rem; /* Ajuste do tamanho da fonte do subtítulo */
+            color: #b0b0b0;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+
+        .planos-section {
+            padding-bottom: 40px;
+        }
+        .planos-section .section-title {
+            text-align: center;
+            font-size: 2rem; /* Ajuste do tamanho da fonte do título da seção de planos */
+            margin-bottom: 40px; /* Mais espaço antes dos cards */
+        }
+        .planos-container {
+            display: flex;
+            flex-wrap: nowrap; /* Impede que os cards quebrem a linha */
+            gap: 25px; /* Espaçamento entre os cards */
+            justify-content: center; /* Centraliza os cards se houver espaço extra */
+            overflow-x: auto; /* Permite rolagem horizontal se os cards não couberem */
+            padding: 10px 0; /* Padding para acomodar a sombra no hover sem cortar */
+        }
+        .plano-card {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 10px; /* Aumenta o arredondamento dos cantos */
+            padding: 30px;
+            width: 31%; /* Tenta dividir em 3, mas com min-width para responsividade */
+            min-width: 320px; /* Largura mínima para cada card */
+            max-width: 380px; /* Largura máxima para cada card */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.4s ease; /* Transição mais suave */
+        }
+        .plano-card:hover {
+            transform: translateY(-8px) scale(1.02); /* Efeito de elevação e leve zoom */
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3); /* Sombra verde mais pronunciada */
+        }
+        .plano-card h2.plano-nome {
+            font-size: 1.8rem; /* Ajuste do tamanho da fonte do nome do plano */
+            margin-top: 0;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .plano-card .plano-preco {
+            font-size: 2rem; /* Preço maior e mais destacado */
+            font-weight: 700; /* Preço bem destacado */
+            color: #4CAF50; /* Preço com a cor de destaque */
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .plano-card .plano-preco span.mensalidade {
+            font-size: 0.8rem; /* "mensal" menor */
+            font-weight: 400;
+            color: #a0a0a0;
+            display: block; /* Coloca "mensal" abaixo do preço */
+            margin-top: -5px;
+        }
+        .plano-card ul.features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+            flex-grow: 1; /* Faz a lista ocupar o espaço, alinhando botões */
+        }
+        .plano-card ul.features-list li {
+            margin-bottom: 12px; /* Mais espaço entre features */
+            padding-left: 30px; /* Espaço para o ícone */
+            position: relative;
+            font-size: 0.95rem;
+            color: #c0c0c0;
+        }
+        .plano-card ul.features-list li::before { /* Ícone de check customizado */
+            content: '✓'; /* Símbolo de check simples */
+            position: absolute;
+            left: 0;
+            top: 1px; /* Ajuste fino vertical */
+            color: #4CAF50; /* Cor do check */
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .plano-card ul.features-list li small {
+            display: block;
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 3px;
+        }
+        .plano-card .btn-assinar {
+            margin-top: auto; /* Empurra o botão para baixo */
+            width: 100%;
+            padding: 14px 20px; /* Botão maior */
+            font-size: 1.1rem;
+        }
+
+        /* Destaque para Plano Pro */
+        .plano-card.pro {
+            border-left: 5px solid #4CAF50; /* Borda lateral de destaque */
+            position: relative; /* Para o pseudo-elemento de "Mais Popular" */
+        }
+         .plano-card.pro::after { /* Tag "Mais Popular" */
+            content: 'Mais Popular';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .business-model-section {
+            margin-top: 50px;
+            padding: 30px;
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .business-model-section h2 {
+            text-align: center;
+        }
+        .business-model-section .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .business-model-section .info-item strong {
+            display: block;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 1024px) { /* Ajuste para quando 3 cards não couberem mais */
+            .planos-container {
+                /* Mantém nowrap, mas o overflow-x permitirá rolagem.
+                   Ou, se preferir quebrar, mude para flex-wrap: wrap; e ajuste width/min-width dos cards.
+                   Para este caso, manteremos a rolagem horizontal para preservar o layout lado a lado. */
+            }
+             .plano-card {
+                min-width: 300px; /* Garante que os cards não fiquem muito esmagados antes de rolar */
+            }
+        }
+        @media (max-width: 768px) {
+            .planos-container {
+                flex-direction: column; /* Empilha em telas muito pequenas */
+                align-items: center;
+                overflow-x: visible; /* Remove rolagem horizontal ao empilhar */
+            }
+            .plano-card {
+                width: 90%;
+                min-width: unset; /* Remove min-width quando empilhado */
+                margin-bottom: 30px; /* Espaço entre cards empilhados */
+            }
+            .plano-card:last-child {
+                margin-bottom: 0;
+            }
+            .introducao-planos h1 { font-size: 2rem; }
+            .planos-section .section-title { font-size: 1.7rem; }
+            .plano-card h2.plano-nome { font-size: 1.6rem; }
+            .plano-card .plano-preco { font-size: 1.8rem; }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="index.html" class="header-logo" title="Início">
+            <img src="https://i.imgur.com/DeTfy65.jpeg" alt="Logo Agro do Bem">
+        </a>
+        <nav class="header-navigation" aria-label="Navegação principal">
+            <a href="index.html" title="Página Inicial"><i class="fa fa-home"></i> Início</a>
+            <a href="planos-produtos.html" class="active" title="Nossos Planos e Produtos"><i class="fa fa-seedling"></i> Planos</a>
+            <a href="analise-espacial.html" title="Análise Espacial Interativa"><i class="fa fa-map"></i> Mapa Interativo</a>
+            <a href="registro.html" title="Crie sua Conta"><i class="fa fa-user-plus"></i> Registrar</a>
+        </nav>
+    </header>
+
+    <main class="page-container">
+        <section class="introducao-planos">
+            <h1>Soluções Inteligentes para Cada Etapa do seu Agro</h1>
+            <p class="subheadline">
+                Da regularização ambiental à otimização da produção e logística, a Agro do Bem oferece planos
+                sob medida para impulsionar sua propriedade rural com tecnologia e dados precisos.
+            </p>
+        </section>
+
+        <section class="planos-section">
+            <h2 class="section-title"><span class="icon-placeholder"></span>Escolha o Plano Ideal para Você</h2>
+            <div class="planos-container">
+                <!-- Plano Free -->
+                <div class="plano-card">
+                    <h2 class="plano-nome">Plano Free</h2>
+                    <p class="plano-preco">R$0,00 <span class="mensalidade">mensal</span></p>
+                    <ul class="features-list">
+                        <li>Relatório com validador gerado com segurança <strong class="highlight-text">blockchain</strong> e QRCode <small>(Autenticidade e imutabilidade garantidas)</small></li>
+                        <li>Abrangência Federal, Estadual e Municipal</li>
+                        <li>Acesso a busca por CAR de até 1.000 hectares</li>
+                        <li>Acesso a Imagens de Satélites (básico)</li>
+                        <li>Acesso a dados espaciais exclusivos Agro do Bem (limitado)</li>
+                    </ul>
+                    <a href="#" class="btn btn-assinar" onclick="alert('Simulando assinatura do Plano Free!')">Comece Grátis</a>
+                </div>
+
+                <!-- Plano Pro -->
+                <div class="plano-card pro"> <!-- Destaque "Mais Popular" -->
+                    <h2 class="plano-nome">Plano Pro</h2>
+                    <p class="plano-preco">R$279,90 <span class="mensalidade">mensal</span></p>
+                    <ul class="features-list">
+                        <li>Relatório com validador gerado com segurança blockchain e QRCode</li>
+                        <li>Abrangência Federal, Estadual e Municipal</li>
+                        <li>Acesso a busca por CAR de até 5.000 hectares</li>
+                        <li>Acesso a Imagens de Satélites (avançado)</li>
+                        <li>Acesso a dados espaciais exclusivos Agro do Bem</li>
+                        <li>Importar Shapefile, KML e KMZ com até 5.000 ha <small>(Integre seus dados geoespaciais)</small></li>
+                        <li>Personalização do relatório com sua logomarca</li>
+                        <li>Suporte prioritário via E-mail</li>
+                    </ul>
+                    <a href="#" class="btn btn-assinar" onclick="alert('Simulando assinatura do Plano Pro!')">Assinar Plano Pro</a>
+                </div>
+
+                <!-- Plano Expert -->
+                <div class="plano-card expert">
+                    <h2 class="plano-nome">Plano Expert</h2>
+                    <p class="plano-preco">R$499,99 <span class="mensalidade">mensal</span></p>
+                    <ul class="features-list">
+                        <li>Relatório com validador gerado com segurança blockchain e QRCode</li>
+                        <li>Abrangência Federal, Estadual e Municipal</li>
+                        <li>Acesso a busca por CAR <strong class="highlight-text">ilimitado</strong></li>
+                        <li>Acesso a Imagens de Satélites <strong class="highlight-text">ilimitado</strong></li>
+                        <li>Acesso a dados espaciais exclusivos Agro do Bem <strong class="highlight-text">ilimitado</strong></li>
+                        <li>Importar Shapefile, KML e KMZ <strong class="highlight-text">ilimitado</strong></li>
+                        <li>Personalização do relatório com sua logomarca</li>
+                        <li>Suporte premium via E-mail e Chat dedicado</li>
+                        <li>Consultoria estratégica inicial (1 hora)</li>
+                    </ul>
+                    <a href="#" class="btn btn-assinar" onclick="alert('Simulando assinatura do Plano Expert!')">Assinar Plano Expert</a>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+        
+        <section class="business-model-section card">
+            <h2><span class="icon-placeholder"></span>Nosso Modelo de Negócio e Foco</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Modelo de Negócio:</strong>
+                    <p>B2B (Business-to-Business) com monetização por assinatura e vendas via Inside Sales.</p>
+                </div>
+                <div class="info-item">
+                    <strong>Cliente Ideal:</strong>
+                    <p>Grandes produtores rurais, agroindústrias, consultorias ambientais, cooperativas e fundos de investimento agrícola.</p>
+                </div>
+                <div class="info-item">
+                    <strong>Mercado Alvo:</strong>
+                    <p>Mais de 2 milhões de propriedades rurais no Brasil, especialmente médios e grandes produtores, cooperativas, sindicatos e consultorias.</p>
+                </div>
+                <div class="info-item">
+                    <strong>Canais de Atração:</strong>
+                    <p>Feiras do setor, Inside Sales dedicado, eventos estratégicos, marketing digital focado, parcerias e produção de conteúdos especializados.</p>
+                </div>
+                 <div class="info-item">
+                    <strong>Qualificação do Cliente:</strong>
+                    <p>Possui orçamento e necessidade urgente (até 3 meses) de soluções em licenciamento ambiental, planejamento agrícola ou logística. Poder decisório com engenheiros agrônomos, gestores ambientais, donos de fazendas ou consultores técnicos.</p>
+                </div>
+                <div class="info-item">
+                    <strong>Roadmap Estratégico:</strong>
+                    <p>
+                        <strong>Q4 2025:</strong> Parcerias com cooperativas e Senar. <br>
+                        <strong>Q1 2026:</strong> Lançamento nacional e expansão comercial. <br>
+                        <strong>Q2 2026:</strong> Plataforma completa com funcionalidades integradas.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/company/ambientare" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://wa.me/5599999999999" target="_blank" rel="noopener" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="mailto:gabriel.oliveira@ambientare.com.br" title="E-mail"><i class="fa fa-envelope"></i></a>
+            </div>
+            <p><strong style="color: #ddd;">Agro do Bem - Decisões Rurais Inteligentes</strong></p>
+            <div class="footer-contact-info">
+                <p><strong>Contato:</strong> <a href="mailto:gabriel.oliveira@ambientare.com.br">gabriel.oliveira@ambientare.com.br</a></p>
+                <p><strong>MVP:</strong> <a href="http://www.agrodobem.com/mvp" target="_blank" rel="noopener noreferrer">www.agrodobem.com/mvp</a></p>
+            </div>
+            <p style="margin-top: 20px;">&copy; <span id="currentYear"></span> Agro do Bem. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

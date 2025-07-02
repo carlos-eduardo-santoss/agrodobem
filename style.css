@@ -1,0 +1,352 @@
+/* style.css - Folha de Estilos Global para Agro do Bem */
+
+/* 
+ * Reset Básico e Configurações Globais
+ * Garante consistência entre navegadores e define o tema base.
+ */
+*, *::before, *::after {
+    box-sizing: border-box; /* Modelo de caixa universal para facilitar o layout */
+    margin: 0; /* Remove margens padrão */
+    padding: 0; /* Remove preenchimentos padrão */
+}
+
+html {
+    scroll-behavior: smooth; /* Rolagem suave para âncoras internas */
+}
+
+:root {
+    --color-bg: #121212;
+    --color-bg-light: #1f1f1f;
+    --color-bg-card: #2a2a2a;
+    --color-primary: #4CAF50;
+    --color-primary-dark: #419144;
+    --color-secondary: #61dafb;
+    --color-accent: #82e9ff;
+    --color-text: #e0e0e0;
+    --color-text-soft: #b0b0b0;
+    --color-text-muted: #888;
+    --color-border: #333;
+    --color-shadow: rgba(0,0,0,0.25);
+    --font-main: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --transition: 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+body, html {
+    font-family: var(--font-main);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.7; /* Espaçamento entre linhas para melhor legibilidade */
+    font-size: 16px; /* Tamanho de fonte base (1rem) */
+    overflow-x: hidden; /* Evita barra de rolagem horizontal desnecessária */
+}
+
+/* 
+ * Cabeçalho (Header)
+ * Consistente em todas as páginas, com logo e navegação.
+ */
+header.main-header {
+    background-color: #1f1f1f; /* Fundo do header, ligeiramente mais claro que o body */
+    padding: 12px 30px; /* Espaçamento interno */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3); /* Sombra mais definida */
+    position: sticky; /* Fixa o header no topo ao rolar */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Garante que o header fique sobre outros elementos */
+    border-bottom: 1px solid #333; /* Linha sutil de separação */
+}
+
+.header-logo img {
+    max-height: 50px; /* Altura da logo */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+.header-logo img:hover {
+    transform: scale(1.05); /* Efeito sutil de zoom na logo */
+}
+
+.header-navigation a,
+.header-navigation button { /* Estilo unificado para links e botões no header */
+    color: #c0c0c0; /* Cor suave para links de navegação */
+    text-decoration: none;
+    margin-left: 20px; /* Espaçamento entre itens de navegação */
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    background-color: transparent; /* Botões transparentes por padrão */
+    border: 1px solid transparent; /* Borda transparente para manter o layout */
+    cursor: pointer;
+}
+.header-navigation a:hover,
+.header-navigation button:hover {
+    color: #ffffff; /* Texto branco no hover */
+    background-color: #4CAF50; /* Fundo verde no hover */
+    border-color: #4CAF50;
+}
+.header-navigation a.active, /* Para marcar o link da página atual */
+.header-navigation button.active {
+    color: #ffffff;
+    background-color: #419144; /* Um verde um pouco diferente para o ativo */
+    font-weight: 600;
+}
+
+
+/* 
+ * Conteúdo Principal (Main Container)
+ * Wrapper para o conteúdo de cada página, garantindo espaçamento e largura máxima.
+ */
+main.page-container {
+    padding: 30px 20px;
+    max-width: 1300px; /* Largura máxima para melhor leitura */
+    margin: 20px auto; /* Centraliza e adiciona margem superior/inferior */
+}
+
+/* 
+ * Títulos e Textos
+ * Estilos base para elementos textuais.
+ */
+h1, h2, h3, h4, h5, h6 {
+    color: #4CAF50; /* Cor de destaque verde para títulos */
+    margin-bottom: 0.8em; /* Margem inferior para títulos */
+    line-height: 1.3;
+    font-weight: 600; /* Títulos mais pesados */
+}
+h1 { font-size: 2.4rem; letter-spacing: -0.5px; }
+h2 { font-size: 1.9rem; }
+h3 { font-size: 1.5rem; }
+
+p {
+    margin-bottom: 1.2em; /* Margem inferior para parágrafos */
+    color: #b0b0b0; /* Cor de texto ligeiramente mais suave para parágrafos */
+}
+a {
+    color: #61dafb; /* Cor de link (azul claro, pode ser ajustado) */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+a:hover {
+    color: #82e9ff;
+    text-decoration: underline;
+}
+
+/* 
+ * Botões Globais (fora do header)
+ * Estilo padrão para botões de ação principais.
+ */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 5px var(--color-shadow);
+    transition: background-color var(--transition), transform 0.1s;
+}
+.btn:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-2px) scale(1.03);
+}
+.btn:active {
+    transform: translateY(1px);
+}
+.btn-secondary {
+    background-color: var(--color-bg-card);
+    color: var(--color-primary);
+    border: 1px solid var(--color-border);
+}
+.btn-secondary:hover {
+    background-color: var(--color-bg-light);
+}
+
+/* 
+ * Formulários
+ * Estilos base para campos de input e labels.
+ */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #cccccc;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+    width: 100%; /* Ocupa a largura total do container pai */
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    background-color: var(--color-bg-card);
+    color: var(--color-text);
+    font-size: 1rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.18);
+    outline: none;
+}
+input::placeholder,
+textarea::placeholder {
+    color: #777;
+    opacity: 0.8;
+}
+
+/* 
+ * Cards
+ * Estilo base para elementos de card.
+ */
+.card {
+    background-color: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 5px 18px var(--color-shadow);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.card:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 12px 32px rgba(76, 175, 80, 0.18);
+}
+
+/* 
+ * Rodapé (Footer)
+ * Consistente em todas as páginas.
+ */
+footer.main-footer {
+    background-color: var(--color-bg-light);
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.95rem;
+}
+footer.main-footer .footer-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+footer.main-footer .footer-social {
+    margin: 18px 0 8px 0;
+}
+footer.main-footer .footer-social a {
+    color: var(--color-primary);
+    margin: 0 10px;
+    font-size: 1.4rem;
+    transition: color var(--transition);
+}
+footer.main-footer .footer-social a:hover {
+    color: var(--color-secondary);
+}
+footer.main-footer p {
+    margin-bottom: 10px;
+    color: #999;
+}
+footer.main-footer a {
+    color: #4CAF50; /* Links no rodapé com a cor de destaque */
+    font-weight: 500;
+}
+footer.main-footer a:hover {
+    color: #61dafb; /* Cor diferente para hover no rodapé */
+    text-decoration: underline;
+}
+.footer-contact-info strong {
+    color: #bbb;
+}
+.footer-cta {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #2a2a2a;
+    border-radius: 5px;
+}
+.footer-cta p {
+    color: #ddd;
+    margin-bottom: 8px;
+}
+
+/* Elementos Visuais Minimalistas */
+.section-divider {
+    border: 0;
+    height: 1px;
+    background: #333; /* Linha divisória sutil */
+    margin: 40px 0;
+}
+
+.highlight-text {
+    color: #4CAF50; /* Cor de destaque para texto importante */
+    font-weight: 600;
+}
+
+.icon-placeholder { /* Para ícones simples */
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #4CAF50; /* Cor do ícone placeholder */
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    /* Em um projeto real, isso seria um SVG ou font icon */
+}
+
+/* Utilitários de espaçamento */
+.u-mt-1 { margin-top: 8px !important; }
+.u-mt-2 { margin-top: 16px !important; }
+.u-mt-3 { margin-top: 32px !important; }
+.u-mb-1 { margin-bottom: 8px !important; }
+.u-mb-2 { margin-bottom: 16px !important; }
+.u-mb-3 { margin-bottom: 32px !important; }
+.u-center { text-align: center !important; }
+
+/* Suporte a ícones Font Awesome */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+/* Ajustes para Responsividade */
+@media (max-width: 768px) {
+    body {
+        font-size: 15px;
+    }
+    header.main-header {
+        flex-direction: column;
+        padding: 15px;
+        align-items: flex-start;
+    }
+    .header-logo {
+        margin-bottom: 10px;
+    }
+    .header-navigation {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-navigation a,
+    .header-navigation button {
+        margin-left: 0;
+        margin-bottom: 8px;
+        width: 100%;
+        text-align: left;
+    }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.6rem; }
+    main.page-container {
+        padding: 20px 15px;
+        margin-top: 10px;
+    }
+}

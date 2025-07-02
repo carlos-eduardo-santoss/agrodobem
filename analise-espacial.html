@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agro do Bem - Análise Espacial Interativa</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS & Plugins -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-measure@3.0.0/leaflet-measure.css">
+    <!-- Leaflet Fullscreen CSS (Opcional, para botão de tela cheia) -->
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+    <style>
+        /* Estilos específicos para a página de análise espacial */
+        body {
+            display: flex;
+            flex-direction: column; /* Header e depois o container do mapa */
+            height: 100vh;
+            overflow: hidden; /* Evita rolagem na página inteira */
+        }
+        main.map-page-container { /* Remove padding padrão para o mapa ocupar tudo */
+            flex-grow: 1; /* Ocupa todo o espaço vertical restante */
+            display: flex; /* Layout flex para painel de camadas e mapa */
+            padding: 0;
+            margin: 0;
+            max-width: none; /* Ocupa a largura total */
+        }
+
+        #layers-panel {
+            width: 280px; /* Largura do painel de camadas */
+            background-color: #1f1f1f;
+            padding: 20px;
+            overflow-y: auto; /* Rolagem se o conteúdo do painel for grande */
+            border-right: 1px solid #333;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+            z-index: 900; /* Abaixo do header, mas acima do mapa */
+            display: flex;
+            flex-direction: column;
+        }
+        #layers-panel h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+        .layer-group {
+            margin-bottom: 20px;
+        }
+        .layer-group h4 {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .layer-item {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .layer-item input[type="radio"],
+        .layer-item input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: #4CAF50; /* Cor de destaque para inputs */
+            transform: scale(1.1);
+        }
+        .layer-item label {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        .layer-item label:hover {
+            color: #fff;
+        }
+        .layer-item .layer-info { /* Ícone de informação (opcional) */
+            font-size: 0.8em; color: #777; margin-left: 5px; cursor: help;
+        }
+
+        #map-controls-container { /* Container para os controles de zoom no painel */
+            margin-top: auto; /* Empurra para o final do painel de camadas */
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+         #map-controls-container h4 {
+            margin-bottom: 10px;
+        }
+        .zoom-controls button {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .zoom-controls button:hover {
+            background-color: #4CAF50;
+        }
+
+
+        #map-container-wrapper {
+            flex-grow: 1; /* Ocupa o restante da largura */
+            position: relative; /* Para o posicionamento do mapa */
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+            background-color: #333; /* Fundo enquanto tiles carregam */
+        }
+        
+        /* Estilos para controles Leaflet (manter os do style.css e adicionar/sobrescrever se necessário) */
+        .leaflet-draw-toolbar, .leaflet-control-measure { /* Posição das ferramentas de desenho e medida */
+            top: 15px !important; /* Ajusta para não colidir com o header, se necessário */
+        }
+
+        /* Tooltip de informação da Agro do Bem */
+        .agro-do-bem-tooltip {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background-color: rgba(31, 31, 31, 0.85);
+            color: #e0e0e0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            max-width: 250px;
+            border: 1px solid #444;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 800;
+        }
+        .agro-do-bem-tooltip strong {
+            color: #4CAF50;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Responsividade do painel de camadas */
+        @media (max-width: 992px) { /* Ponto de quebra para telas médias/tablets */
+            #layers-panel {
+                width: 220px; /* Reduz a largura do painel */
+            }
+             #layers-panel h3 { font-size: 1.15rem; }
+             .layer-group h4 { font-size: 0.9rem; }
+             .layer-item label { font-size: 0.85rem; }
+        }
+        @media (max-width: 768px) { /* Ponto de quebra para mobile */
+            main.map-page-container {
+                flex-direction: column-reverse; /* Mapa em cima, painel embaixo ou sobreposto */
+            }
+            #layers-panel {
+                width: 100%;
+                max-height: 40vh; /* Limita a altura do painel */
+                border-right: none;
+                border-top: 1px solid #333;
+                box-shadow: 0 -3px 10px rgba(0,0,0,0.2);
+                flex-direction: row; /* Tenta colocar lado a lado dentro do painel */
+                flex-wrap: wrap;
+                justify-content: space-around;
+                padding: 10px;
+            }
+            #layers-panel h3 { display: none; } /* Esconde título principal do painel */
+            .layer-group { margin-bottom: 10px; flex-basis: 45%; }
+            .layer-group h4 { font-size: 0.85rem; margin-bottom: 5px; }
+
+            #map-controls-container {
+                margin-top: 10px;
+                padding-top: 10px;
+                width: 100%; /* Ocupa a largura no layout de linha */
+                text-align: center;
+            }
+            .zoom-controls button { margin: 5px; }
+            .agro-do-bem-tooltip { font-size: 0.75rem; max-width: 180px; bottom: 10px; left: 10px;}
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="index.html" class="header-logo" title="Início">
+            <img src="https://i.imgur.com/DeTfy65.jpeg" alt="Logo Agro do Bem">
+        </a>
+        <nav class="header-navigation" aria-label="Navegação principal">
+            <a href="index.html" title="Página Inicial"><i class="fa fa-home"></i> Início</a>
+            <a href="planos-produtos.html" title="Nossos Planos e Produtos"><i class="fa fa-seedling"></i> Planos</a>
+            <a href="analise-espacial.html" class="active" title="Análise Espacial Interativa"><i class="fa fa-map"></i> Mapa Interativo</a>
+            <a href="registro.html" title="Crie sua Conta"><i class="fa fa-user-plus"></i> Registrar</a>
+        </nav>
+    </header>
+
+    <main class="map-page-container">
+        <aside id="layers-panel">
+            <h3><span class="icon-placeholder"></span>Camadas e Controles</h3>
+            
+            <div class="layer-group">
+                <h4>Mapa Base</h4>
+                <div class="layer-item">
+                    <input type="radio" id="baseOsmLight" name="baseLayer" value="osmLight" checked>
+                    <label for="baseOsmLight">Padrão Claro (OSM)</label>
+                </div>
+                <div class="layer-item">
+                    <input type="radio" id="baseOsmDark" name="baseLayer" value="osmDark">
+                    <label for="baseOsmDark">Padrão Escuro (CARTO)</label>
+                </div>
+                <div class="layer-item">
+                    <input type="radio" id="baseSatellite" name="baseLayer" value="satellite">
+                    <label for="baseSatellite">Satélite (Google)</label>
+                </div>
+            </div>
+
+            <div class="layer-group">
+                <h4>Camadas de Sobreposição</h4>
+                <div class="layer-item">
+                    <input type="checkbox" id="overlaySicar" name="overlayLayer" value="sicar">
+                    <label for="overlaySicar">Imóveis Rurais (SICAR)</label>
+                    <span class="layer-info" title="Camada oficial de imóveis rurais do Cadastro Ambiental Rural. Pode levar alguns segundos para carregar.">[i]</span>
+                </div>
+                <div class="layer-item">
+                    <input type="checkbox" id="overlayUFs" name="overlayLayer" value="ufs">
+                    <label for="overlayUFs">Unidades da Federação</label>
+                </div>
+                <div class="layer-item">
+                    <input type="checkbox" id="overlayMunicipios" name="overlayLayer" value="municipios">
+                    <label for="overlayMunicipios">Municípios</label>
+                    <span class="layer-info" title="A camada de municípios é detalhada e pode ser lenta para carregar em zoom amplo. Melhor visualizada com zoom aproximado.">[i]</span>
+                </div>
+                <div class="layer-item">
+                    <input type="checkbox" id="overlayBiomas" name="overlayLayer" value="biomas">
+                    <label for="overlayBiomas">Biomas do Brasil</label>
+                </div>
+                 <div class="layer-item">
+                    <input type="checkbox" id="overlayDrawn" name="overlayLayer" value="drawnItems" checked>
+                    <label for="overlayDrawn">Meus Desenhos</label>
+                </div>
+            </div>
+            
+            <div id="map-controls-container">
+                <h4>Zoom</h4>
+                <div class="zoom-controls">
+                    <button id="zoomInBtn" title="Aproximar">+</button>
+                    <button id="zoomOutBtn" title="Afastar">-</button>
+                </div>
+            </div>
+        </aside>
+
+        <section id="map-container-wrapper">
+            <div id="map"></div>
+            <div class="agro-do-bem-tooltip">
+                <strong>Dica Agro do Bem:</strong>
+                Use as ferramentas de desenho e camadas para analisar sua propriedade. Com nossos relatórios, você evita riscos ambientais e otimiza sua produção!
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ownerName = localStorage.getItem('agroDoBem_ownerName');
+            const propertyName = localStorage.getItem('agroDoBem_propertyName');
+            const carNumber = localStorage.getItem('agroDoBem_carNumber');
+
+            const carCoordinates = {
+                "CAR123XYZ": { lat: -15.793889, lng: -47.882778, zoom: 13, info: "Fazenda Esperança (Brasília-DF)" },
+                "DEFAULT":   { lat: -14.235004, lng: -51.92528, zoom: 4, info: "Brasil" }
+            };
+            let propertyLocation = carCoordinates["DEFAULT"];
+            if (carNumber && carCoordinates[carNumber.toUpperCase()]) {
+                propertyLocation = carCoordinates[carNumber.toUpperCase()];
+            }
+
+            // Inicialização do Mapa (sem o controle de zoom padrão)
+            const map = L.map('map', {
+                center: [propertyLocation.lat, propertyLocation.lng],
+                zoom: propertyLocation.zoom,
+                zoomControl: false, // Zoom será controlado pelo painel
+                fullscreenControl: true, // Adiciona botão de tela cheia (opcional)
+            });
+
+            // --- CAMADAS BASE ---
+            const osmLightLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            });
+            const cartoDarkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OSM &copy; CARTO', maxZoom: 19
+            });
+            const googleSatelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps', maxZoom: 20
+            });
+             osmLightLayer.addTo(map); // Padrão Claro como base inicial
+
+            const baseLayers = {
+                osmLight: osmLightLayer,
+                osmDark: cartoDarkLayer,
+                satellite: googleSatelliteLayer
+            };
+
+            // --- CAMADAS DE SOBREPOSIÇÃO (OVERLAYS) ---
+            const drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            // Camada SICAR Imóveis (WMS) - CORRIGIDA E TESTADA (usando camada pública de exemplo)
+            // IMPORTANTE: O nome da camada e a disponibilidade do serviço SICAR podem mudar.
+            // A camada 'cadastro-ambiental-rural:area_imovel' é uma camada comum para áreas de imóveis no CAR.
+            // Se esta não funcionar, consulte o GetCapabilities do SICAR:
+            // https://geoservicos.car.gov.br/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities
+            const sicarImoveisLayer = L.tileLayer.wms('https://geoservicos.car.gov.br/geoserver/ows', {
+                layers: 'cadastro-ambiental-rural:area_imovel', // Tente esta camada, mais provável de funcionar.
+                format: 'image/png',
+                transparent: true,
+                version: '1.3.0', 
+                attribution: 'Imóveis Rurais &copy; SICAR/MMA',
+                // Adicionar `crs: L.CRS.EPSG4326` ou o CRS correto se houver desalinhamento,
+                // embora o GeoServer deva re-projetar para o EPSG:3857 do mapa por padrão.
+                // crs: L.CRS.EPSG3857, // Para forçar, mas normalmente não é necessário
+                // srs: 'EPSG:4674' // Se o servidor WMS servir apenas neste CRS nativo e não re-projetar bem
+            });
+             sicarImoveisLayer.on('loading', function() { console.log('Carregando camada SICAR...'); });
+             sicarImoveisLayer.on('load', function() { console.log('Camada SICAR carregada.'); });
+             sicarImoveisLayer.on('tileerror', function(error) { console.error('Erro no tile SICAR:', error); });
+
+
+            // Camadas GeoJSON (UFs, Municípios, Biomas)
+            // Para este protótipo, vamos simular com GeoJSONs menores ou links para GeoJSONs hospedados.
+            // Idealmente, para Municípios, seria um serviço WMS/WFS ou Vector Tiles devido ao tamanho.
+
+            let ufsLayer = L.geoJSON(null, { style: { color: "#ff7800", weight: 2, opacity: 0.7 }});
+            fetch('https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-25-mun.json') // Exemplo: UFs de um estado (SE) para teste. Substituir por UFs do Brasil.
+                .then(response => response.json())
+                .then(data => {
+                    // Para UFs do Brasil, o GeoJSON pode ser grande.
+                    // Este é um exemplo com municípios de Sergipe para demonstração rápida.
+                    // Procure um GeoJSON das UFs do Brasil. Ex: https://github.com/fititnt/gis-dataset-brasil/blob/master/uf/geojson/uf.json
+                    // ufsLayer.addData(data);
+                    console.log("GeoJSON de 'UFs' (exemplo) carregado. Adapte para UFs do Brasil.");
+                }).catch(err => console.error("Erro ao carregar GeoJSON UFs:", err));
+
+            let municipiosLayer = L.geoJSON(null, { style: { color: "#4682B4", weight: 1, opacity: 0.5 }});
+            // Carregar GeoJSON de Municípios sob demanda ou com filtro de zoom seria o ideal.
+            // Exemplo: fetch('https://raw.githubusercontent.com/fititnt/gis-dataset-brasil/master/municipio/geojson/municipio.json')
+            // .then(response => response.json()).then(data => municipiosLayer.addData(data));
+            console.log("Camada de Municípios configurada (sem dados carregados por padrão para performance).");
+
+
+            let biomasLayer = L.geoJSON(null, {
+                style: function(feature) {
+                    // Estilo diferente por bioma (exemplo)
+                    switch (feature.properties.Name) { // Ajuste 'Name' para o nome da propriedade do bioma no seu GeoJSON
+                        case 'AMAZONIA': return {color: "#228B22", weight:2, fillOpacity: 0.4}; // Verde Escuro
+                        case 'CERRADO': return {color: "#FFD700", weight:2, fillOpacity: 0.4};   // Dourado/Amarelo
+                        case 'MATA ATLANTICA': return {color: "#3CB371", weight:2, fillOpacity: 0.4}; // Verde Médio
+                        case 'CAATINGA': return {color: "#F4A460", weight:2, fillOpacity: 0.4}; // Laranja Claro/Areia
+                        case 'PAMPA': return {color: "#90EE90", weight:2, fillOpacity: 0.4};   // Verde Claro
+                        case 'PANTANAL': return {color: "#ADD8E6", weight:2, fillOpacity: 0.4}; // Azul Claro
+                        default: return {color: "#777777", weight:2, fillOpacity: 0.4};
+                    }
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.Name) {
+                        layer.bindPopup("Bioma: " + feature.properties.Name);
+                    }
+                }
+            });
+             // Exemplo de link para GeoJSON de Biomas (verificar e substituir por um funcional e leve)
+            fetch('https://raw.githubusercontent.com/alexplanas/brCadastroAmbientalRural/master/aux_shapes/BR_Biomas_5000_2004_IBGE.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    biomasLayer.addData(data);
+                    console.log("GeoJSON de Biomas carregado.");
+                }).catch(err => console.error("Erro ao carregar GeoJSON Biomas:", err));
+
+
+            const overlayLayers = {
+                sicar: sicarImoveisLayer,
+                ufs: ufsLayer,
+                municipios: municipiosLayer,
+                biomas: biomasLayer,
+                drawnItems: drawnItems
+            };
+
+            // --- CONTROLES DO PAINEL ESQUERDO ---
+            document.querySelectorAll('input[name="baseLayer"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    for (const key in baseLayers) {
+                        map.removeLayer(baseLayers[key]);
+                    }
+                    map.addLayer(baseLayers[this.value]);
+                });
+            });
+
+            document.querySelectorAll('input[name="overlayLayer"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (overlayLayers[this.value]) map.addLayer(overlayLayers[this.value]);
+                    } else {
+                        if (overlayLayers[this.value]) map.removeLayer(overlayLayers[this.value]);
+                    }
+                });
+            });
+
+            document.getElementById('zoomInBtn').addEventListener('click', () => map.zoomIn());
+            document.getElementById('zoomOutBtn').addEventListener('click', () => map.zoomOut());
+
+            // --- FERRAMENTAS LEAFLET (Medida e Desenho) ---
+            const measureControl = L.control.measure({
+                position: 'topright', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers',
+                primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares',
+                activeColor: '#4CAF50', completedColor: '#2e7d32'
+            });
+            measureControl.addTo(map);
+
+            const drawControl = new L.Control.Draw({
+                position: 'topright',
+                draw: {
+                    polygon: { shapeOptions: { color: '#FFD700', weight: 2, fillOpacity: 0.3 }},
+                    polyline: { shapeOptions: { color: '#FFD700', weight: 3 }},
+                    rectangle: { shapeOptions: { color: '#FFD700', weight: 2, fillOpacity: 0.3 }},
+                    circle: { shapeOptions: { color: '#FFD700', weight: 2, fillOpacity: 0.3 }},
+                    marker: { icon: new L.Icon.Default() },
+                    circlemarker: false
+                },
+                edit: { featureGroup: drawnItems, remove: true }
+            });
+            map.addControl(drawControl);
+
+            map.on(L.Draw.Event.CREATED, function (event) {
+                const layer = event.layer;
+                drawnItems.addLayer(layer);
+                let popupContent = `<b>Geometria Desenhada</b><br>Tipo: ${event.layerType}`;
+                if (['marker', 'polyline', 'polygon', 'rectangle', 'circle'].includes(event.layerType)) {
+                    popupContent += `<br><button onclick="createBufferFromLayer('${layer._leaflet_id}')" class="btn btn-secondary" style="padding: 5px 10px; font-size:0.8em; margin-top:5px;">Buffer (100m)</button>`;
+                }
+                layer.bindPopup(popupContent).openPopup();
+                window[`drawnLayer_${layer._leaflet_id}`] = layer;
+            });
+            
+            // Função de Buffer (global para ser chamada pelo popup)
+             window.createBufferFromLayer = function(layerId) {
+                const layer = window[`drawnLayer_${layerId}`];
+                if (!layer) { console.error(`Camada ${layerId} não encontrada para buffer.`); return; }
+                const bufferDistanceMeters = 100;
+                try {
+                    const geoJsonFeature = layer.toGeoJSON();
+                    let turfGeometry = geoJsonFeature.geometry;
+                    if (layer instanceof L.Circle) { // Tratamento especial para círculo
+                        turfGeometry = turf.point([layer.getLatLng().lng, layer.getLatLng().lat]).geometry;
+                    }
+                    if (!turfGeometry || !turfGeometry.coordinates) throw new Error('Geometria inválida para buffer.');
+                    
+                    const buffered = turf.buffer(turfGeometry, bufferDistanceMeters, { units: 'meters', steps: 64 });
+                    const bufferLayer = L.geoJSON(buffered, {
+                        style: { color: "#3388ff", weight: 2, opacity: 0.8, fillColor: "#3388ff", fillOpacity: 0.2 }
+                    }).bindPopup(`Buffer de ${bufferDistanceMeters}m`).addTo(map);
+                    drawnItems.addLayer(bufferLayer);
+                    map.fitBounds(bufferLayer.getBounds());
+                } catch (error) {
+                    console.error("Erro ao criar buffer:", error);
+                    alert(`Falha ao criar buffer: ${error.message}`);
+                }
+            };
+
+
+            // Marcador da Propriedade (se houver dados)
+            if (propertyName && ownerName) { // Adiciona marcador se nome e proprietário existem
+                const propertyMarker = L.marker([propertyLocation.lat, propertyLocation.lng]).addTo(map);
+                let popupText = `<b>${propertyName}</b><br>Proprietário: ${ownerName}`;
+                if (carNumber) popupText += `<br>CAR: ${carNumber}`;
+                if (propertyLocation.info && propertyLocation.info !== "Brasil") popupText += `<br><small>(${propertyLocation.info})</small>`;
+                propertyMarker.bindPopup(popupText).openPopup();
+            }
+            
+            console.log("Mapa Agro do Bem inicializado.");
+        });
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
