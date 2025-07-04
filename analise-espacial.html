@@ -14,6 +14,9 @@
     <!-- Leaflet Fullscreen CSS (Opcional, para botão de tela cheia) -->
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
+    <!-- Leaflet JS principal (deve vir antes dos plugins e do script do mapa) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         /* Estilos específicos para a página de análise espacial */
         body {
@@ -178,6 +181,29 @@
             .zoom-controls button { margin: 5px; }
             .agro-do-bem-tooltip { font-size: 0.75rem; max-width: 180px; bottom: 10px; left: 10px;}
         }
+        .custom-zoom-btn {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            width: 42px;
+            height: 42px;
+            font-size: 1.5rem;
+            margin: 2px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+            box-shadow: 0 2px 8px rgba(76,175,80,0.12);
+            outline: none;
+        }
+        .custom-zoom-btn:hover {
+            background-color: #388e3c;
+            box-shadow: 0 4px 16px rgba(76,175,80,0.22);
+        }
+        .custom-zoom-btn:active {
+            background-color: #2e7d32;
+            transform: scale(0.96);
+            box-shadow: 0 1px 4px rgba(76,175,80,0.18);
+        }
     </style>
 </head>
 <body>
@@ -194,65 +220,50 @@
     </header>
 
     <main class="map-page-container">
-        <aside id="layers-panel">
-            <h3><span class="icon-placeholder"></span>Camadas e Controles</h3>
-            
-            <div class="layer-group">
-                <h4>Mapa Base</h4>
-                <div class="layer-item">
+        <aside id="layers-panel" style="background:rgba(31,31,31,0.98); box-shadow: 2px 0 16px rgba(0,0,0,0.18); border-radius: 0 16px 16px 0; padding-top: 28px;">
+            <h3 style="font-size:1.25rem; color:#4CAF50; font-weight:700; letter-spacing:-1px; margin-bottom:18px;">Camadas</h3>
+            <div class="layer-group" style="margin-bottom: 28px;">
+                <div style="font-size:1.08rem; color:#e0e0e0; font-weight:600; margin-bottom:10px;">Mapa Base</div>
+                <div style="margin-bottom: 8px;">
                     <input type="radio" id="baseOsmLight" name="baseLayer" value="osmLight" checked>
-                    <label for="baseOsmLight">Padrão Claro (OSM)</label>
+                    <label for="baseOsmLight" style="margin-left:7px;">Padrão Claro (OSM)</label>
                 </div>
-                <div class="layer-item">
+                <div style="margin-bottom: 8px;">
                     <input type="radio" id="baseOsmDark" name="baseLayer" value="osmDark">
-                    <label for="baseOsmDark">Padrão Escuro (CARTO)</label>
+                    <label for="baseOsmDark" style="margin-left:7px;">Padrão Escuro (CARTO)</label>
                 </div>
-                <div class="layer-item">
+                <div style="margin-bottom: 8px;">
                     <input type="radio" id="baseSatellite" name="baseLayer" value="satellite">
-                    <label for="baseSatellite">Satélite (Google)</label>
+                    <label for="baseSatellite" style="margin-left:7px;">Satélite (Google)</label>
                 </div>
             </div>
-
-            <div class="layer-group">
-                <h4>Camadas de Sobreposição</h4>
-                <div class="layer-item">
-                    <input type="checkbox" id="overlaySicar" name="overlayLayer" value="sicar">
-                    <label for="overlaySicar">Imóveis Rurais (SICAR)</label>
-                    <span class="layer-info" title="Camada oficial de imóveis rurais do Cadastro Ambiental Rural. Pode levar alguns segundos para carregar.">[i]</span>
-                </div>
-                <div class="layer-item">
-                    <input type="checkbox" id="overlayUFs" name="overlayLayer" value="ufs">
-                    <label for="overlayUFs">Unidades da Federação</label>
-                </div>
-                <div class="layer-item">
-                    <input type="checkbox" id="overlayMunicipios" name="overlayLayer" value="municipios">
-                    <label for="overlayMunicipios">Municípios</label>
-                    <span class="layer-info" title="A camada de municípios é detalhada e pode ser lenta para carregar em zoom amplo. Melhor visualizada com zoom aproximado.">[i]</span>
-                </div>
-                <div class="layer-item">
-                    <input type="checkbox" id="overlayBiomas" name="overlayLayer" value="biomas">
-                    <label for="overlayBiomas">Biomas do Brasil</label>
-                </div>
-                 <div class="layer-item">
-                    <input type="checkbox" id="overlayDrawn" name="overlayLayer" value="drawnItems" checked>
-                    <label for="overlayDrawn">Meus Desenhos</label>
-                </div>
-            </div>
-            
-            <div id="map-controls-container">
-                <h4>Zoom</h4>
-                <div class="zoom-controls">
-                    <button id="zoomInBtn" title="Aproximar">+</button>
-                    <button id="zoomOutBtn" title="Afastar">-</button>
+            <div class="layer-group" style="margin-bottom: 18px;">
+                <div style="font-size:1.08rem; color:#e0e0e0; font-weight:600; margin-bottom:10px;">Camadas de Sobreposição</div>
+                <div style="margin-bottom: 8px; display:flex; align-items:center;">
+                    <input type="checkbox" id="overlayDrawn" name="overlayLayer" value="drawnItems" checked style="accent-color:#4CAF50; width:18px; height:18px;">
+                    <label for="overlayDrawn" style="margin-left:9px; font-size:1rem; color:#b0ffb0; font-weight:500;">Meus Desenhos</label>
                 </div>
             </div>
         </aside>
 
         <section id="map-container-wrapper">
             <div id="map"></div>
-            <div class="agro-do-bem-tooltip">
-                <strong>Dica Agro do Bem:</strong>
-                Use as ferramentas de desenho e camadas para analisar sua propriedade. Com nossos relatórios, você evita riscos ambientais e otimiza sua produção!
+            <div class="agro-do-bem-tooltip" id="agro-tooltip" style="position:absolute; left: 24px; bottom: 24px; background:rgba(31,31,31,0.85); border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.18); padding:12px 18px; font-size:0.98em; max-width:320px; z-index:2000;">
+                <strong style="color:#4CAF50;">Dica Agro do Bem:</strong>
+                <span>Use as ferramentas de desenho e camadas para analisar sua propriedade. Com nossos relatórios, você evita riscos ambientais e otimiza sua produção!</span>
+                <button id="close-tooltip" style="position:absolute; top:8px; right:10px; background:transparent; border:none; color:#fff; font-size:1.3em; cursor:pointer; z-index:2100; padding:0; margin:0; line-height:1;">&times;</button>
+            </div>
+            <!-- Legenda interativa -->
+            <div id="map-legend" style="position: absolute; bottom: 20px; right: 20px; background: rgba(31,31,31,0.96); color: #e0e0e0; border: 1px solid #444; border-radius: 10px; padding: 12px 16px; font-size: 0.98em; min-width: 150px; z-index: 1001; box-shadow: 0 2px 12px rgba(0,0,0,0.18);">
+                <strong style="color: #4CAF50; font-size: 1.08em;">Legenda</strong>
+                <ul id="legend-list" style="list-style: none; margin: 10px 0 0 0; padding: 0;"></ul>
+            </div>
+            <!-- Zoom customizado no canto superior esquerdo do mapa -->
+            <div id="custom-zoom-controls" style="position: absolute; top: 20px; left: 20px; z-index: 1001; background: rgba(31,31,31,0.92); border: 1px solid #444; border-radius: 10px; padding: 8px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.18);">
+                <div class="zoom-controls" style="display: flex; flex-direction: column; align-items: center;">
+                    <button class="custom-zoom-btn" id="zoomInBtn" title="Aproximar">+</button>
+                    <button class="custom-zoom-btn" id="zoomOutBtn" title="Afastar">-</button>
+                </div>
             </div>
         </section>
     </main>
@@ -272,10 +283,13 @@
                 propertyLocation = carCoordinates[carNumber.toUpperCase()];
             }
 
-            // Inicialização do Mapa (sem o controle de zoom padrão)
+            // Centralização fixa em Brasília
+            const brasilia = { lat: -15.793889, lng: -47.882778, zoom: 13 };
+
+            // Inicialização do Mapa (sempre em Brasília)
             const map = L.map('map', {
-                center: [propertyLocation.lat, propertyLocation.lng],
-                zoom: propertyLocation.zoom,
+                center: [brasilia.lat, brasilia.lng],
+                zoom: brasilia.zoom,
                 zoomControl: false, // Zoom será controlado pelo painel
                 fullscreenControl: true, // Adiciona botão de tela cheia (opcional)
             });
@@ -291,38 +305,28 @@
             const googleSatelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
                 attribution: '&copy; Google Maps', maxZoom: 20
             });
-             osmLightLayer.addTo(map); // Padrão Claro como base inicial
+            // Adiciona camada padrão inicial
+            osmLightLayer.addTo(map);
 
             const baseLayers = {
                 osmLight: osmLightLayer,
                 osmDark: cartoDarkLayer,
                 satellite: googleSatelliteLayer
             };
+            let currentBaseLayer = osmLightLayer;
+
+            // Controle de troca de camada base
+            document.querySelectorAll('input[name="baseLayer"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (currentBaseLayer) map.removeLayer(currentBaseLayer);
+                    currentBaseLayer = baseLayers[this.value];
+                    map.addLayer(currentBaseLayer);
+                });
+            });
 
             // --- CAMADAS DE SOBREPOSIÇÃO (OVERLAYS) ---
             const drawnItems = new L.FeatureGroup();
             map.addLayer(drawnItems);
-
-            // Camada SICAR Imóveis (WMS) - CORRIGIDA E TESTADA (usando camada pública de exemplo)
-            // IMPORTANTE: O nome da camada e a disponibilidade do serviço SICAR podem mudar.
-            // A camada 'cadastro-ambiental-rural:area_imovel' é uma camada comum para áreas de imóveis no CAR.
-            // Se esta não funcionar, consulte o GetCapabilities do SICAR:
-            // https://geoservicos.car.gov.br/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities
-            const sicarImoveisLayer = L.tileLayer.wms('https://geoservicos.car.gov.br/geoserver/ows', {
-                layers: 'cadastro-ambiental-rural:area_imovel', // Tente esta camada, mais provável de funcionar.
-                format: 'image/png',
-                transparent: true,
-                version: '1.3.0', 
-                attribution: 'Imóveis Rurais &copy; SICAR/MMA',
-                // Adicionar `crs: L.CRS.EPSG4326` ou o CRS correto se houver desalinhamento,
-                // embora o GeoServer deva re-projetar para o EPSG:3857 do mapa por padrão.
-                // crs: L.CRS.EPSG3857, // Para forçar, mas normalmente não é necessário
-                // srs: 'EPSG:4674' // Se o servidor WMS servir apenas neste CRS nativo e não re-projetar bem
-            });
-             sicarImoveisLayer.on('loading', function() { console.log('Carregando camada SICAR...'); });
-             sicarImoveisLayer.on('load', function() { console.log('Camada SICAR carregada.'); });
-             sicarImoveisLayer.on('tileerror', function(error) { console.error('Erro no tile SICAR:', error); });
-
 
             // Camadas GeoJSON (UFs, Municípios, Biomas)
             // Para este protótipo, vamos simular com GeoJSONs menores ou links para GeoJSONs hospedados.
@@ -374,24 +378,19 @@
                 }).catch(err => console.error("Erro ao carregar GeoJSON Biomas:", err));
 
 
+            const regioesAdmLayer = L.tileLayer.wms('https://www.geoservicos.ide.df.gov.br/arcgis/services/Publico/LIMITES/MapServer/WMSServer', {
+                layers: '2', // Camada 2 = Regiões Administrativas
+                format: 'image/png',
+                transparent: true,
+                version: '1.3.0',
+                attribution: 'Regiões Administrativas &copy; IDE/DF'
+            });
+
             const overlayLayers = {
-                sicar: sicarImoveisLayer,
-                ufs: ufsLayer,
-                municipios: municipiosLayer,
-                biomas: biomasLayer,
                 drawnItems: drawnItems
             };
 
             // --- CONTROLES DO PAINEL ESQUERDO ---
-            document.querySelectorAll('input[name="baseLayer"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    for (const key in baseLayers) {
-                        map.removeLayer(baseLayers[key]);
-                    }
-                    map.addLayer(baseLayers[this.value]);
-                });
-            });
-
             document.querySelectorAll('input[name="overlayLayer"]').forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     if (this.checked) {
@@ -474,6 +473,58 @@
             }
             
             console.log("Mapa Agro do Bem inicializado.");
+
+            // --- LEGENDA INTERATIVA ---
+            const legendItems = {
+                osmLight: { label: 'Padrão Claro (OSM)', color: '#4CAF50' },
+                osmDark: { label: 'Padrão Escuro (CARTO)', color: '#222', border: '1px solid #888' },
+                satellite: { label: 'Satélite (Google)', color: 'linear-gradient(90deg,#b3e0ff,#fff,#b3e0ff)', border: '1px solid #aaa' },
+                drawnItems: { label: 'Desenhos/Buffer', color: '#fff', border: '2px dashed #FFD700' },
+                buffer: { label: 'Buffer (100m)', color: 'transparent', border: '2px solid #3388ff' }
+            };
+
+            function updateLegend() {
+                const legendList = document.getElementById('legend-list');
+                legendList.innerHTML = '';
+                // Base layer
+                const baseValue = document.querySelector('input[name="baseLayer"]:checked').value;
+                if (legendItems[baseValue]) {
+                    legendList.innerHTML += `<li><span style="display:inline-block;width:18px;height:10px;background:${legendItems[baseValue].color};${legendItems[baseValue].border ? 'border:' + legendItems[baseValue].border + ';' : ''}border-radius:2px;margin-right:7px;vertical-align:middle;"></span> ${legendItems[baseValue].label}</li>`;
+                }
+                // Overlay layers
+                document.querySelectorAll('input[name="overlayLayer"]:checked').forEach(cb => {
+                    const key = cb.value;
+                    if (legendItems[key]) {
+                        legendList.innerHTML += `<li><span style="display:inline-block;width:18px;height:10px;background:${legendItems[key].color};${legendItems[key].border ? 'border:' + legendItems[key].border + ';' : ''}border-radius:2px;margin-right:7px;vertical-align:middle;"></span> ${legendItems[key].label}</li>`;
+                    }
+                });
+            }
+            // Atualiza ao trocar base ou overlays
+            document.querySelectorAll('input[name="baseLayer"]').forEach(radio => {
+                radio.addEventListener('change', updateLegend);
+            });
+            document.querySelectorAll('input[name="overlayLayer"]').forEach(cb => {
+                cb.addEventListener('change', updateLegend);
+            });
+            // Atualiza ao carregar
+            updateLegend();
+
+            // Corrigir listeners dos botões de zoom customizados
+            document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
+            document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
+
+            // Corrigir botão de fechar tooltip de forma robusta
+            var closeTooltipBtn = document.getElementById('close-tooltip');
+            if (closeTooltipBtn) {
+                closeTooltipBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var tooltip = document.getElementById('agro-tooltip');
+                    if (tooltip) {
+                        tooltip.style.display = 'none';
+                        console.log('Tooltip fechada via addEventListener!');
+                    }
+                });
+            }
         });
 
         document.getElementById('currentYear').textContent = new Date().getFullYear();
